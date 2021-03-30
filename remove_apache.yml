@@ -1,0 +1,19 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: update repository indext
+    apt:
+      update_cache: yes
+
+  - name: remove apache2 package
+    apt:
+      name: apache2
+      state: absent
+
+  - name: remove php package
+    apt:
+      name: libapache2-mod-php
+      state: absent
