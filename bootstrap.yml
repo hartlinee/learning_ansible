@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: install updates (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates (Ubuntu)
+    tags: always
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create a test user (alice)
+    tags: always
+    user:
+      name: alice
+      groups: root
+
+  - name: add ssh key for alice
+    tags: always
+    authorized_key:
+      user: alice
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHfNuN8ZeJNMdr1hN3czfu36GhZwq/G2X7qMdp6Bs8cB ansible"
+
+  - name: add sudoers file for alice
+    tags: always
+    copy:
+      src: sudoer_alice
+      dest: /etc/sudoers.d/alice
+      owner: root
+      group: root
+      mode: 0440
