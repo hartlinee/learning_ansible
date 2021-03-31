@@ -1,0 +1,5 @@
+- name: add ssh key for alice
+  authorized_key:
+    user: alice
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHfNuN8ZeJNMdr1hN3czfu36GhZwq/G2X7qMdp6Bs8cB ansible"
+

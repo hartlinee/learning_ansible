@@ -1,0 +1,50 @@
+- name: install apache and php packages for Ubuntu servers
+  tags: apache,apache2,ubuntu
+  apt:
+    name: 
+      - apache2
+      - libapache2-mod-php
+    state: latest
+  when: ansible_distribution == "Ubuntu"
+
+- name: change email address for web admin
+  tags: apache,apache2,ubuntu
+  lineinfile:
+    path: /etc/apache2/sites-available/000-default.conf
+    regexp: "{{'\t'}}ServerAdmin"
+    line: "{{'\t'}}ServerAdmin admin@admin"
+  when: ansible_distribution == "Ubuntu"
+  register: admin_email
+
+- name: restart apache (Ubuntu)
+  tags: apache,apache2,ubuntu
+  service:
+    name: apache2
+    state: restarted
+  when: admin_email.changed
+
+- name: install apache and php packages for CentOS servers
+  tags: apache,httpd,centos
+  dnf:
+    name: 
+      - httpd
+      - php
+    state: latest
+  when: ansible_distribution == "CentOS"
+
+- name: start and enable httpd (CentOS)
+  tags: apache,httpd,centos
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  when: ansible_distribution == "CentOS"
+
+- name: copy default html file to site
+  tags: apache,apache2,httpd
+  copy:
+    src: default_site.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644
